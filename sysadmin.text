@@ -1,0 +1,335 @@
+Task 1 :   During the daily standup, it was pointed out that the timezone across Nautilus Application Servers in Stratos Datacenter doesn't match with that of the local datacenter's timezone, which is America/Blanc-Sablon.
+
+Please Note :-  Perform the below commands based on your question  server,  user name & other details might differ . So please read task carefully before executing
+
+Solution:  
+1. At first login on App server   &  Switch to  root user
+
+thor@jump_host ~$ ssh tony@stapp01
+The authenticity of host 'stapp01 (172.16.238.10)' can't be established.
+ECDSA key fingerprint is SHA256:2DbVbI7xvrQSSIOQD502dx7BHfADaJEecTxNIX/MmQs.
+ECDSA key fingerprint is MD5:c6:8e:51:2e:28:dd:bd:cc:e4:b6:b5:c4:d3:dc:13:e6.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'stapp01,172.16.238.10' (ECDSA) to the list of known hosts.
+tony@stapp01's password:
+ [tony@stapp01 ~]$ sudo su -
+ We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+     #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+ [sudo] password for tony:
+[root@stapp01 ~]# 
+
+
+ 2. Run Below command to  check existing Time Zone set for server
+
+[root@stapp01 ~]# timedatectl
+      Local time: Sat 2021-06-12 15:22:41 UTC
+  Universal time: Sat 2021-06-12 15:22:41 UTC
+        RTC time: n/a
+
+       Time zone: UTC (UTC, +0000)
+     NTP enabled: n/a
+NTP synchronized: yes
+ RTC in local TZ: no
+      DST active: n/a
+[root@stapp01 ~]#
+
+ 3. Help give you syntax to set the time zone & others
+
+[root@stapp01 ~]# timedatectl -h
+timedatectl [OPTIONS...] COMMAND ...
+ 
+Query or change system time and date settings.
+ 
+  -h --help                Show this help message
+     --version             Show package version
+     --no-pager            Do not pipe output into a pager
+     --no-ask-password     Do not prompt for password
+  -H --host=[USER@]HOST    Operate on remote host
+  -M --machine=CONTAINER   Operate on local container
+     --adjust-system-clock Adjust system clock when changing local RTC mode
+
+Commands:
+  status                   Show current time settings
+  set-time TIME            Set system time
+  set-timezone ZONE        Set system time zone
+  list-timezones           Show known time zones
+  set-local-rtc BOOL       Control whether RTC is in local time
+  set-ntp BOOL             Control whether NTP is enabled
+[root@stapp01 ~]#
+
+ 4. Run Below command to set the time zone  & verify it 
+
+[root@stapp01 ~]# timedatectl set-timezone America/Blanc-Sablon
+ 
+ [root@stapp01 ~]# timedatectl
+      Local time: Sat 2021-06-12 11:25:38 AST
+  Universal time: Sat 2021-06-12 15:25:38 UTC
+        RTC time: n/a
+       Time zone: America/Blanc-Sablon (AST, -0400)
+     NTP enabled: n/a
+NTP synchronized: yes
+ RTC in local TZ: no
+      DST active: n/a
+[root@stapp01 ~]#
+
+Please Note :- You have to do this in all app servers stapp01,stapp02, stapp03. I have Shown only for Stapp01 
+
+...................................................................
+
+Task 2 : There are new requirements to automate a backup process that was performed manually by the xFusionCorp Industries system admins team earlier. To automate this task, the team has developed a new bash script xfusioncorp.sh. They have already copied the script on all required servers, however they did not make it executable on one the app server i.e App Server 1 in Stratos Datacenter.
+
+Please give executable permissions to /tmp/xfusioncorp.sh script on App Server 1. Also make sure every user can execute it.
+
+Solution:
+
+thor@jump_host /$ ssh tony@stapp01
+The authenticity of host 'stapp01 (172.16.238.10)' can't be established.
+ECDSA key fingerprint is SHA256:RIRt2SqEVQ3yKDQ+cX5QLPw7mJNJhXUcT5Dpsy4GU1U.
+ECDSA key fingerprint is MD5:bd:f7:14:9e:c0:fd:41:0d:2d:e4:30:47:8a:34:35:ae.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'stapp01,172.16.238.10' (ECDSA) to the list of known hosts.
+tony@stapp01's password:
+[tony@stapp01 ~]$ sudo su -
+ We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+     #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+ [sudo] password for tony:
+[root@stapp01 ~]#
+
+2. List the file existing file permission 
+
+[root@stapp01 ~]# ls -ltr /tmp/xfusioncorp.sh
+---------- 1 root root 40 Jun 17 09:02 /tmp/xfusioncorp.sh  
+[root@stapp01 ~]#
+
+3. As per the task all other users need to have execute permission  
+[root@stapp01 ~]# chmod o+rx /tmp/xfusioncorp.sh
+
+Please note that in case of bash script bash is the interpreter that is actually going to execute the script and the interpreter needs to read the script so even if you have given it only executable permission the interpreter i.e bash will not be able to execute it so you had to give it read permission as well along with execute permission.
+
+[root@stapp01 ~]# cat /tmp/xfusioncorp.sh
+#!/bin/bash
+echo "Welcome To KodeKloud"
+[root@stapp01 ~]#
+
+4. Verify the file permissions and execute the script form user 
+
+[root@stapp01 ~]#ls -lrt /tmp/xfusioncorp.sh
+-------r-x 1 root root 40 Jun 17 09:25 /tmp/xfusioncorp.sh 
+[root@stapp01 ~]# exit
+logout
+[tony@stapp01 ~]$ sh /tmp/xfusioncorp.sh
+Welcome To KodeKloud
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+Task 3 :  Create a Linux User with a non-interactive shell The System Admin Team of XfusionCorp Industries has installed a backup agent tool on all app servers. As per the tool's requirements, they need to create a user with a non-interactive shell. 
+
+Solution:  
+1. At first login to the respective mentioned server in the task. Mine is stapp02
+
+thor@jump_host /$ ssh steve@stapp02
+
+The authenticity of host 'stapp02 (172.16.238.11)' can't be established.
+ECDSA key fingerprint is SHA256:NgyY+fBF5b56d9UEyUmbNHqK7eZTbk5n5/Ypr19rQkk.
+ECDSA key fingerprint is MD5:ef:d2:32:cb:57:6f:44:cb:0c:0b:4f:82:f0:dc:92:70.
+Are you sure you want to continue connecting (yes/no)? yes
+
+Warning: Permanently added 'stapp02,172.16.238.11' (ECDSA) to the list of known hosts.
+steve@stapp02's password:
+[steve@stapp02 ~]$
+
+[steve@stapp02 ~]$ sudo su -
+ We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+     #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+ [sudo] password for steve:
+[root@stapp02 ~]# 
+
+2.  1st check user is existed on the server  by below command
+[root@stapp02 ~]# id ravi
+id: ravi: no such user
+[root@stapp02 ~]#
+
+3.  If the user is not found the then you create a user with a non-interactive shell 
+[root@stapp02 ~]# adduser ravi  -s /sbin/nologin
+[root@stapp02 ~]#
+
+4.  Validate user is created successfully as per the task request. 
+
+[root@stapp02 ~]# id ravi
+uid=1002(ravi) gid=1002(ravi) groups=1002(ravi)
+ [root@stapp02 ~]# cat /etc/passwd |grep ravi
+ravi:x:1002:1002::/home/ravi:/sbin/nologin
+[root@stapp02 ~]#    
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+Task 4 :  There is some data on Nautilus App Server 3 in Stratos DC. Data needs to be altered in several of the files. On Nautilus App Server 3, alter the /home/BSD.txt file as per details given below:
+
+a. Delete all lines containing word software and save results in /home/BSD_DELETE.txt file. (Please be aware of case sensitivity)
+
+b. Replace all occurrence of word and to is and save results in /home/BSD_REPLACE.txt file.
+
+Note: Let's say you are asked to replace word to with from. In that case, make sure not to alter any words containing this string; for example upto, contributor etc.
+
+Solution:  
+1. Login on   App server as per the task
+thor@jump_host ~$ ssh banner@stapp03
+The authenticity of host 'stapp03 (172.16.238.12)' can't be established.
+ECDSA key fingerprint is SHA256:jQBzPUeKPaiyjrpKdy6e4PG/2IswOUaZYIogb7o1SHE.
+ECDSA key fingerprint is MD5:1f:11:06:a6:ec:6c:f5:37:38:31:79:ad:a6:70:94:37.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'stapp03,172.16.238.12' (ECDSA) to the list of known hosts.
+banner@stapp03's password:
+[banner@stapp03 ~]$ sudo su -
+ We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+     #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+ [sudo] password for banner:
+[root@stapp03 ~]#
+
+2. List the existing file and cat the word given in task which need to delete.
+
+[root@stapp03 ~]# ll /home/
+total 20
+drwx------ 1 ansible ansible 4096 Oct 15  2019 ansible
+drwx------ 1 banner  banner  4096 Jan 25  2020 banner
+-rw-r--r-- 1 root    root    9919 Jun 27 12:27 BSD.txt
+[root@stapp03 ~]#
+[root@stapp03 ~]# cat /home/BSD.txt |grep software
+3. All advertising materials mentioning features or use of this software
+   This product includes software developed by the <organization>.
+   derived from this software without specific prior written permission.
+3. All advertising materials mentioning features or use of this software
+   This product includes software developed by the <organization>.
+   derived from this software without specific prior written permission.
+3. All advertising materials mentioning features or use of this software
+   This product includes software developed by the <organization>.
+   derived from this software without specific prior written permission.
+3. All advertising materials mentioning features or use of this software
+   This product includes software developed by the <organization>.
+   derived from this software without specific prior written permission.
+3. All advertising materials mentioning features or use of this software
+   This product includes software developed by the <organization>.
+   derived from this software without specific prior written permission.
+3. All advertising materials mentioning features or use of this software
+   This product includes software developed by the <organization>.
+   derived from this software without specific prior written permission.
+[root@stapp03 ~]#
+
+Note :- As per the task, BSD.txt file should be intact. But using "sed -i" will change the file in place.So if you want to use "sed -i" , make the copy of the BSD.txt to respective files and do the changes on newly created files.
+
+Another option is which task required is just apply "sed" on original file and redirect the output to respective files. This won't affect the original place. As show below
+
+3. Delete all lines containing word software and save results in /home/BSD_DELETE.txt file
+[root@stapp03 ~]# sed '/\<software\>/d' /home/BSD.txt > /home/BSD_DELETE.txt
+[root@stapp03 ~]#
+[root@stapp03 ~]# cat /home/BSD_DELETE.txt |grep software
+[root@stapp03 ~]#
+
+4.  Cat the output for the word which going to replace 
+[root@stapp03 ~]# cat /home/BSD.txt |grep and
+Redistribution and use in source and binary forms, with or without
+   notice, this list of conditions and the following disclaimer.
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+Redistribution and use in source and binary forms, with or without
+   notice, this list of conditions and the following disclaimer.
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+Redistribution and use in source and binary forms, with or without
+   notice, this list of conditions and the following disclaimer.
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+Redistribution and use in source and binary forms, with or without
+   notice, this list of conditions and the following disclaimer.
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+Redistribution and use in source and binary forms, with or without
+   notice, this list of conditions and the following disclaimer.
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+Redistribution and use in source and binary forms, with or without
+   notice, this list of conditions and the following disclaimer.
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+[root@stapp03 ~]#
+5.  Now replace  all occurrence of word and redirect to new file
+[root@stapp03 ~]# sed 's/\band\b/is/g' /home/BSD.txt > /home/BSD_REPLACE.txt
+[root@stapp03 ~]#
+6.  Validate the word replaced successfully
+root@stapp03 ~]# cat /home/BSD_REPLACE.txt |grep and
+[root@stapp03 ~]# cat /home/BSD_REPLACE.txt |grep is
+Redistribution is use in source is binary forms, with or without
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions is the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions is the following disclaimer in the
+   documentation is/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by the <organization>.
+   derived from this software without specific prior written permission.
+Redistribution is use in source is binary forms, with or without
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions is the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions is the following disclaimer in the
+   documentation is/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by the <organization>.
+   derived from this software without specific prior written permission.
+Redistribution is use in source is binary forms, with or without
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions is the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions is the following disclaimer in the
+   documentation is/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by the <organization>.
+   derived from this software without specific prior written permission.
+Redistribution is use in source is binary forms, with or without
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions is the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions is the following disclaimer in the
+   documentation is/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by the <organization>.
+   derived from this software without specific prior written permission.
+Redistribution is use in source is binary forms, with or without
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions is the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions is the following disclaimer in the
+   documentation is/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by the <organization>.
+   derived from this software without specific prior written permission.
+Redistribution is use in source is binary forms, with or without
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions is the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions is the following disclaimer in the
+documentation is/or other materials provided with the distribution.
+3. All advertising materials mentioning features or use of this software
+   must display the following acknowledgement:
+   This product includes software developed by the <organization>.
+   derived from this software without specific prior written permission.
+[root@stapp03 ~]#
+
+
+
