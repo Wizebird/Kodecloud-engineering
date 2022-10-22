@@ -463,6 +463,115 @@ Jun 15 15:26:31 stdb01.stratos.xfusioncorp.com systemd[1]: Started MariaDB datab
 Hint: Some lines were ellipsized, use -l to show in full.
 [root@stdb01 ~]# 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+ Task6 : Some users of the monitoring app have reported issues with xFusionCorp Industries mail server. They have a mail server in Stork DC where they are using postfix mail transfer agent. Postfix service seems to fail. Try to identify the root cause and fix it.
+
+
+Solution:  
+1. Login on   Mail  server as per the task and switch root user
+
+thor@jump_host /$ ssh groot@stmail01
+The authenticity of host 'stmail01 (172.16.238.11)' can't be established.
+ECDSA key fingerprint is SHA256:SySamszyWhhLGFiybhGBqfrr8g55wS/3e37ZpBOvICs.
+ECDSA key fingerprint is MD5:6d:31:18:2a:f9:07:f3:29:dd:0a:d3:1f:6e:04:0a:db.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'stmail01,172.16.238.17' (ECDSA) to the list of known hosts.
+groot@stmail01's password:
+[groot@stmail01 ~]$ sudo su -
+ We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+     #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+ [sudo] password for groot:
+[root@stmail01 ~]#
+
+2. Start postfix service , check status with -l for details error output 
+[root@stmail01 ~]# systemctl start postfix
+Job for postfix.service failed because the control process exited with error code. See "systemctl status postfix.service" and "journalctl -xe" for details.
+[root@stmail01 ~]#
+[root@stmail01 ~]# systemctl status postfix -l
+● postfix.service - Postfix Mail Transport Agent
+   Loaded: loaded (/usr/lib/systemd/system/postfix.service; enabled; vendor preset: disabled)
+   Active: failed (Result: exit-code) since Tue 2021-06-22 14:55:33 UTC; 6s ago
+  Process: 383 ExecStart=/usr/sbin/postfix start (code=exited, status=1/FAILURE)
+  Process: 382 ExecStartPre=/usr/libexec/postfix/chroot-update (code=exited, status=0/SUCCESS)
+  Process: 379 ExecStartPre=/usr/libexec/postfix/aliasesdb (code=exited, status=75)
+Jun 22 14:55:31 stmail01.stratos.xfusioncorp.com systemd[1]: Starting Postfix Mail Transport Agent...
+Jun 22 14:55:31 stmail01.stratos.xfusioncorp.com aliasesdb[379]: /usr/sbin/postconf: fatal: parameter inet_interfaces: no local interface found for ::1
+Jun 22 14:55:32 stmail01.stratos.xfusioncorp.com aliasesdb[379]: newaliases: fatal: parameter inet_interfaces: no local interface found for ::1
+Jun 22 14:55:32 stmail01.stratos.xfusioncorp.com postfix/sendmail[381]: fatal: parameter inet_interfaces: no local interface found for ::1
+Jun 22 14:55:32 stmail01.stratos.xfusioncorp.com postfix[383]: fatal: parameter inet_interfaces: no local interface found for ::1
+Jun 22 14:55:33 stmail01.stratos.xfusioncorp.com systemd[1]: postfix.service: control process exited, code=exited status=1
+Jun 22 14:55:33 stmail01.stratos.xfusioncorp.com systemd[1]: Failed to start Postfix Mail Transport Agent.
+Jun 22 14:55:33 stmail01.stratos.xfusioncorp.com systemd[1]: Unit postfix.service entered failed state.
+Jun 22 14:55:33 stmail01.stratos.xfusioncorp.com systemd[1]: postfix.service failed.
+[root@stmail01 ~]#
+
+3. As we identify the issue in configuration file edit and do the changes
+
+[root@stmail01 ~]# cat /etc/postfix/main.cf |grep inet_interface
+# The inet_interfaces parameter specifies the network interface
+inet_interfaces = all
+#inet_interfaces = $myhostname
+#inet_interfaces = $myhostname, localhost
+inet_interfaces = localhost
+# the address list specified with the inet_interfaces parameter.
+# receives mail on (see the inet_interfaces parameter).
+# to $mydestination, $inet_interfaces or $proxy_interfaces.
+# - destinations that match $inet_interfaces or $proxy_interfaces,
+# unknown@[$inet_interfaces] or unknown@[$proxy_interfaces] is returned
+[root@stmail01 ~]#
+[root@stmail01 ~]# vi /etc/postfix/main.cf
+[root@stmail01 ~]# cat /etc/postfix/main.cf |grep inet_interface
+# The inet_interfaces parameter specifies the network interface
+inet_interfaces = all
+#inet_interfaces = $myhostname
+#inet_interfaces = $myhostname, localhost
+#inet_interfaces = localhost
+# the address list specified with the inet_interfaces parameter.
+# receives mail on (see the inet_interfaces parameter).
+# to $mydestination, $inet_interfaces or $proxy_interfaces.
+# - destinations that match $inet_interfaces or $proxy_interfaces,
+# unknown@[$inet_interfaces] or unknown@[$proxy_interfaces] is returned
+[root@stmail01 ~]#
+
+4. Post configuration saved start the services and check the status 
+
+[root@stmail01 ~]# systemctl start postfix
+[root@stmail01 ~]#
+[root@stmail01 ~]# systemctl status postfix
+● postfix.service - Postfix Mail Transport Agent
+   Loaded: loaded (/usr/lib/systemd/system/postfix.service; enabled; vendor preset: disabled)
+   Active: active (running) since Tue 2021-06-22 14:59:45 UTC; 16s ago
+  Process: 475 ExecStop=/usr/sbin/postfix stop (code=exited, status=0/SUCCESS)
+  Process: 504 ExecStart=/usr/sbin/postfix start (code=exited, status=0/SUCCESS)
+  Process: 503 ExecStartPre=/usr/libexec/postfix/chroot-update (code=exited, status=0/SUCCESS)
+  Process: 501 ExecStartPre=/usr/libexec/postfix/aliasesdb (code=exited, status=0/SUCCESS)
+ Main PID: 575 (master)
+ CGroup: /docker/050a5d787eedc1731e809d002d6f548be599723012d6b80fd344d807a45da4db/system.slice/postfix.service
+           ├─575 /usr/libexec/postfix/master -w
+           ├─576 pickup -l -t unix -u
+           └─577 qmgr -l -t unix -u
+ Jun 22 14:59:45 stmail01.stratos.xfusioncorp.com systemd[1]: Starting Postfix Mail Transport Agent...
+Jun 22 14:59:45 stmail01.stratos.xfusioncorp.com postfix/master[575]: daemon started -- version 2.10.1, configuration /e...fix
+Jun 22 14:59:45 stmail01.stratos.xfusioncorp.com systemd[1]: Started Postfix Mail Transport Agent.
+Hint: Some lines were ellipsized, use -l to show in full.
+[root@stmail01 ~]#
+
+5. validate the task by telnet the port 25 
+
+thor@jump_host /$ telnet stmail01 25
+Trying 172.16.238.17...
+Connected to stmail01.
+Escape character is '^]'.
+220 stmail01.stratos.xfusioncorp.com ESMTP Postfix
+Connection closed by foreign host.
+thor@jump_host /$
+
+
+
 
 
 
