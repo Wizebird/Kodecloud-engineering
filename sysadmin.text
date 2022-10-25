@@ -612,6 +612,91 @@ nameserver 8.8.8.8
 options ndots:0
 [root@stapp03 ~]#
 
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+Task 7 :  There was some users data copied on Nautilus App Server 1 at /home/usersdata location by the Nautilus production support team in Stratos DC. Later they found that they mistakenly mixed up different user data there. Now they want to filter out some user data and copy it to another location. Find the details below:
+
+On App Server 1 find all files (not directories) owned by user kirsty inside /home/usersdata directory and copy them all while keeping the folder structure (preserve the directories path) to /media directory.
+
+
+1. At first login on App server   &  Switch to  root user 
+
+thor@jump_host ~$ ssh tony@stapp01
+The authenticity of host 'stapp01 (172.16.238.10)' can't be established.
+ECDSA key fingerprint is SHA256:L7eZuubxoGQvmU+y/Y4oTcBchrTEEXJRICeutnhKj4c.
+ECDSA key fingerprint is MD5:4b:24:ff:99:ed:fd:ac:56:28:05:99:f1:62:f4:d9:65.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'stapp01,172.16.238.10' (ECDSA) to the list of known hosts.
+tony@stapp01's password:
+[tony@stapp01 ~]$ sudo su -
+ We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+     #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+ [sudo] password for tony:
+[root@stapp01 ~]#
+
+
+2. List the files and folders in the given folder path in task
+[root@stapp01 ~]# ll /home/usersdata/
+total 208
+-rw-r--r--  1 kirsty root   420 Jun 15 08:20 index.php
+-rw-r--r--  1 root   root 19935 Jun 15 08:20 license.txt
+-rw-r--r--  1 root   root  7368 Jun 15 08:20 readme.html
+-rw-r--r--  1 kirsty root  6939 Jun 15 08:20 wp-activate.php
+drwxr-xr-x  9 root   root  4096 Jun 15 08:20 wp-admin
+-rw-r--r--  1 kirsty root   369 Jun 15 08:20 wp-blog-header.php
+-rw-r--r--  1 kirsty root  2283 Jun 15 08:20 wp-comments-post.php
+-rw-r--r--  1 kirsty root  2898 Jun 15 08:20 wp-config-sample.php
+drwxr-xr-x  4 root   root  4096 Jun 15 08:20 wp-content
+-rw-r--r--  1 kirsty root  3955 Jun 15 08:20 wp-cron.php
+drwxr-xr-x 20 root   root 12288 Jun 15 08:20 wp-includes
+-rw-r--r--  1 kirsty root  2504 Jun 15 08:20 wp-links-opml.php
+-rw-r--r--  1 kirsty root  3326 Jun 15 08:20 wp-load.php
+-rw-r--r--  1 kirsty root 47597 Jun 15 08:20 wp-login.php
+-rw-r--r--  1 kirsty root  8483 Jun 15 08:20 wp-mail.php
+-rw-r--r--  1 kirsty root 19120 Jun 15 08:20 wp-settings.php
+-rw-r--r--  1 kirsty root 31112 Jun 15 08:20 wp-signup.php
+-rw-r--r--  1 kirsty root  4764 Jun 15 08:20 wp-trackback.php
+-rw-r--r--  1 kirsty root  3150 Jun 15 08:20 xmlrpc.php
+[root@stapp01 ~]#
+[root@stapp01 ~]# ll /media/
+total 0
+[root@stapp01 ~]#
+[root@stapp01 ~]# find /home/usersdata/ -type f -user kirsty |wc -l
+1383
+[root@stapp01 ~]#
+
+
+3. As per the task find the files name by user & copy with folder structure 
+
+[root@stapp01 ~]# find /home/usersdata/ -type f -user kirsty -exec cp --parents {} /media \;
+[root@stapp01 ~]#
+\
+4. List the files copied in the destination folder given in task
+
+[root@stapp01 ~]# ll /media/home/usersdata/
+total 180
+-rw-r--r--  1 root root   420 Jun 15 08:24 index.php
+-rw-r--r--  1 root root  6939 Jun 15 08:24 wp-activate.php
+drwxr-xr-x  7 root root  4096 Jun 15 08:24 wp-admin
+-rw-r--r--  1 root root   369 Jun 15 08:24 wp-blog-header.php
+-rw-r--r--  1 root root  2283 Jun 15 08:24 wp-comments-post.php
+-rw-r--r--  1 root root  2898 Jun 15 08:24 wp-config-sample.php
+drwxr-xr-x  4 root root  4096 Jun 15 08:24 wp-content
+-rw-r--r--  1 root root  3955 Jun 15 08:24 wp-cron.php
+drwxr-xr-x 16 root root 12288 Jun 15 08:24 wp-includes
+-rw-r--r--  1 root root  2504 Jun 15 08:24 wp-links-opml.php
+-rw-r--r--  1 root root  3326 Jun 15 08:24 wp-load.php
+-rw-r--r--  1 root root 47597 Jun 15 08:24 wp-login.php
+-rw-r--r--  1 root root  8483 Jun 15 08:24 wp-mail.php
+-rw-r--r--  1 root root 19120 Jun 15 08:24 wp-settings.php
+-rw-r--r--  1 root root 31112 Jun 15 08:24 wp-signup.php
+-rw-r--r--  1 root root  4764 Jun 15 08:24 wp-trackback.php
+-rw-r--r--  1 root root  3150 Jun 15 08:24 xmlrpc.php
+[root@stapp01 ~]#  
+
 
 
 
