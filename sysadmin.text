@@ -697,7 +697,179 @@ drwxr-xr-x 16 root root 12288 Jun 15 08:24 wp-includes
 -rw-r--r--  1 root root  3150 Jun 15 08:24 xmlrpc.php
 [root@stapp01 ~]#  
 
+''''''''''''''''''''''''''''''''''''''''''''''''''
+Task 8:   The backup server in the Stratos DC contains several templated XML files used by the Nautilus application. However, these template XML. files must be populated with valid data before they can be used.
+
+Replace all occurrences of the string About to Cloud on the XML file /root/nautilus.xml located in the backup server.
+
+Solution
+1. At first login on Backup server  & Switch to  root user 
+
+thor@jump_host ~$ ssh clint@stbkp01
+The authenticity of host 'stbkp01 (172.16.238.16)' can't be established.
+ECDSA key fingerprint is SHA256:QxlPU0/gV0gyK8YIJGOoEnxj57cSuTtirpTMzGdgKTM.
+ECDSA key fingerprint is MD5:9f:8e:c0:1d:38:01:56:86:6d:85:b3:3f:69:6a:7c:44.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'stbkp01,172.16.238.16' (ECDSA) to the list of known hosts.
+clint@stbkp01's password:
+[clint@stbkp01 ~]$ sudo su -
+ We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+     #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+ [sudo] password for clint:
+[root@stbkp01 ~]#
+
+2. Pull out the string About on the XML file /root/nautilus.xml
+
+[root@stbkp01 ~]# cat /root/nautilus.xml  |grep About  | wc -l
+66
+[root@stbkp01 ~]# cat /root/nautilus.xml  |grep About
+
+<genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+      <genre>About</genre>
+[root@stbkp01 ~]#
+
+4. Replace the string  About  to Cloud with the help of sed command
+
+[root@stbkp01 ~]# sed -i 's/About/Cloud/g' /root/nautilus.xml
+[root@stbkp01 ~]#
 
 
-
-
+5. confirm the change in string Cloud 
+[root@stbkp01 ~]# cat /root/nautilus.xml  |grep Cloud
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+      <genre>Cloud</genre>
+[root@stbkp01 ~]# cat /root/nautilus.xml  |grep Cloud |wc -l
+66
+[root@stbkp01 ~]# cat /root/nautilus.xml  |grep About  | wc -l
+0
