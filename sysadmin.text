@@ -1362,6 +1362,68 @@ SELINUXTYPE=targeted
 [root@stapp03 ~]# sestatus
 SELinux status:                 disabled
 [root@stapp03 ~]#
-               
+ .................................................
+ Task9 : The Nautilus team doesn't want its data to be accessed by any of the other groups/teams due to security reasons and want their data to be strictly accessed by the devops group of the team.
+
+Setup a collaborative directory /devops/data on Nautilus App 1 server in Stratos Datacenter.
+
+The directory should be group owned by the group devops and the group should own the files inside the directory. The directory should be read/write/execute to the group owners, and others should not have any access.  
+
+Solution:  
+1. Login on   App server as per the task
+
+thor@jump_host /$ ssh tony@stapp01
+The authenticity of host 'stapp01 (172.16.238.10)' can't be established.
+ECDSA key fingerprint is SHA256:RIRt2SqEVQ3yKDQ+cX5QLPw7mJNJhXUcT5Dpsy4GU1U.
+ECDSA key fingerprint is MD5:bd:f7:14:9e:c0:fd:41:0d:2d:e4:30:47:8a:34:35:ae.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'stapp01,172.16.238.10' (ECDSA) to the list of known hosts.
+tony@stapp01's password:
+[tony@stapp01 ~]$ sudo su -
+ We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+     #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+ [sudo] password for tony:
+[root@stapp01 ~]#
+2. Create folder according to the task & list to confirm
+
+[root@stapp01 ~]# mkdir -p /devops/data  
+[root@stapp01 ~]#
+[root@stapp01 ~]# ll -lsd /devops/data/
+4 drwxr-xr-x 2 root root 4096 Jun 19 04:54 /devops/data/
+[root@stapp01 ~]#
+3. Change group of the directory from root to mentioned group in task
+
+chgrp = changing primary group for the directory.
+
+-R = recursive . changes will reflect all sub-directories and files below.
+
+[root@stapp01 ~]# chgrp -R devops /devops/data
+[root@stapp01 ~]#
+[root@stapp01 ~]# ll -lsd /devops/data/
+
+4 drwxr-xr-x 2 root devops 4096 Jun 19 04:54 /devops/data/
+[root@stapp01 ~]#
+4. Change group of the directory from root to mentioned group in task
+
+chmod - modifying permission for sharedgrp.
+
+2770  - Giving full permission to user (root) & group users and zero permmision for other users.
+
+           2 - Special Permission. set group id.
+
+           7 -  4+2+1 = 7 (4= read, 2 = write, 1 = execute).User (root) Permission
+
+           7 -  4+2+1 = 7 (4= read, 2 = write, 1 = execute). Group Permission
+
+           0 - Other users.(zero permission).
+
+[root@stapp01 ~]# chmod -R 2770 /devops/data
+[root@stapp01 ~]#
+[root@stapp01 ~]# ll -lsd /devops/data/
+4 drwxrws--- 2 root devops 4096 Jun 19 04:54 /devops/data/
+            
  
 
