@@ -1469,6 +1469,145 @@ javed:x:1002:1002::/home/javed:/bin/bash
 total 8
 drwx------ 1 ansible ansible 4096 Oct 15  2019 ansible
 drwx------ 1 tony    tony    4096 Jan 25  2020 tony
-[root@stapp01 ~]#         
+[root@stapp01 ~]#
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+ Task 9 :  The system admin team of xFusionCorp Industries has noticed an issue with some servers in Stratos Datacenter where some of the servers are not in sync w.r.t time. Because of this, several application functionalities have been impacted. To fix this issue the team has started using common/standard NTP servers. They are finished with most of the servers except App Server 1. Therefore, perform the following tasks on this server:
+
+Install and configure NTP server on App Server 1.
+
+Add NTP server 1.sg.pool.ntp.org in NTP configuration on App Server 1.
+
+Please do not try to start/restart/stop ntp service, as we already have a restart for this service scheduled for tonight and we don't want these changes to be applied right now.    
+
+Solution:  
+1. At first login on App server   &  Switch to  root user 
+
+thor@jump_host ~$ ssh tony@stapp01
+The authenticity of host 'stapp01 (172.16.238.10)' can't be established.
+ECDSA key fingerprint is SHA256:2DbVbI7xvrQSSIOQD502dx7BHfADaJEecTxNIX/MmQs.
+ECDSA key fingerprint is MD5:c6:8e:51:2e:28:dd:bd:cc:e4:b6:b5:c4:d3:dc:13:e6.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'stapp01,172.16.238.10' (ECDSA) to the list of known hosts.
+tony@stapp01's password:
+ [tony@stapp01 ~]$ sudo su -
+ We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+     #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+ [sudo] password for tony:
+[root@stapp01 ~]#
+2. Check NTP is installed , if not then install on the server 
+
+[root@stapp01 ~]# rpm -qa |grep ntp
+[root@stapp01 ~]#
+[root@stapp01 ~]# yum install -y ntp
+Loaded plugins: fastestmirror, ovl
+Determining fastest mirrors
+ * base: ftpmirror.your.org
+ * extras: bay.uchicago.edu
+ * updates: ftpmirror.your.org
+base                                                                       | 3.6 kB  00:00:00    
+extras                                                                     | 2.9 kB  00:00:00    
+updates                                                                    | 2.9 kB  00:00:00    
+(1/4): base/7/x86_64/group_gz                                              | 153 kB  00:00:00    
+(2/4): extras/7/x86_64/primary_db                                          | 242 kB  00:00:00    
+(3/4): base/7/x86_64/primary_db                                            | 6.1 MB  00:00:00    
+(4/4): updates/7/x86_64/primary_db                                         | 8.8 MB  00:00:00    
+Resolving Dependencies
+--> Running transaction check
+---> Package ntp.x86_64 0:4.2.6p5-29.el7.centos.2 will be installed
+--> Processing Dependency: ntpdate = 4.2.6p5-29.el7.centos.2 for package: ntp-4.2.6p5-29.el7.centos.2.x86_64
+--> Processing Dependency: libopts.so.25()(64bit) for package: ntp-4.2.6p5-29.el7.centos.2.x86_64
+--> Running transaction check
+---> Package autogen-libopts.x86_64 0:5.18-5.el7 will be installed
+---> Package ntpdate.x86_64 0:4.2.6p5-29.el7.centos.2 will be installed
+--> Finished Dependency Resolution
+ 
+Dependencies Resolved
+ 
+==================================================================================================
+ Package                  Arch            Version                             Repository     Size
+==================================================================================================
+Installing:
+ntp                      x86_64          4.2.6p5-29.el7.centos.2             base          549 k
+Installing for dependencies:
+ autogen-libopts          x86_64          5.18-5.el7                          base           66 k
+ ntpdate                  x86_64          4.2.6p5-29.el7.centos.2             base           87 k
+ 
+Transaction Summary
+==================================================================================================
+Install  1 Package (+2 Dependent packages)
+ 
+Total download size: 701 k
+Installed size: 1.6 M
+Downloading packages:
+(1/3): autogen-libopts-5.18-5.el7.x86_64.rpm                               |  66 kB  00:00:00    
+(2/3): ntpdate-4.2.6p5-29.el7.centos.2.x86_64.rpm                          |  87 kB  00:00:00    
+(3/3): ntp-4.2.6p5-29.el7.centos.2.x86_64.rpm                              | 549 kB  00:00:00    
+--------------------------------------------------------------------------------------------------
+Total                                                             1.2 MB/s | 701 kB  00:00:00    
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : autogen-libopts-5.18-5.el7.x86_64                                              1/3
+  Installing : ntpdate-4.2.6p5-29.el7.centos.2.x86_64                                         2/3
+  Installing : ntp-4.2.6p5-29.el7.centos.2.x86_64                                             3/3
+  Verifying  : ntpdate-4.2.6p5-29.el7.centos.2.x86_64                                         1/3
+  Verifying  : ntp-4.2.6p5-29.el7.centos.2.x86_64                                             2/3
+  Verifying  : autogen-libopts-5.18-5.el7.x86_64                                              3/3
+ Installed:
+  ntp.x86_64 0:4.2.6p5-29.el7.centos.2                                                           
+ Dependency Installed:
+  autogen-libopts.x86_64 0:5.18-5.el7           ntpdate.x86_64 0:4.2.6p5-29.el7.centos.2         
+ Complete!
+ 3. Confirm package install successfully
+
+[root@stapp01 ~]# rpm -qa |grep ntp
+ntp-4.2.6p5-29.el7.centos.2.x86_64
+ntpdate-4.2.6p5-29.el7.centos.2.x86_64
+[root@stapp01 ~]#
+ 4. Add NTP server in configuration file 
+
+[root@stapp01 ~]# vi /etc/ntp.conf
+[root@stapp01 ~]#
+[root@stapp01 ~]# cat /etc/ntp.conf |grep sg.pool
+server 1.sg.pool.ntp.org
+[root@stapp01 ~]#
+ 
+5. Check NTP daemon status  
+[root@stapp01 ~]# ntpstat
+Unable to talk to NTP daemon. Is it running?
+[root@stapp01 ~]#
+  [root@stapp01 ~]# systemctl status ntpd
+● ntpd.service - Network Time Service
+   Loaded: loaded (/usr/lib/systemd/system/ntpd.service; disabled; vendor preset: disabled)
+   Active: inactive (dead)
+
+6. Start NTP daemon enable and check the status 
+
+[root@stapp01 ~]# systemctl enable ntpd
+Created symlink from /etc/systemd/system/multi-user.target.wants/ntpd.service to /usr/lib/systemd/system/ntpd.service.
+[root@stapp01 ~]# systemctl start  ntpd
+[root@stapp01 ~]#
+[root@stapp01 ~]# systemctl status ntpd
+● ntpd.service - Network Time Service
+Loaded: loaded (/usr/lib/systemd/system/ntpd.service; enabled; vendor preset: disabled)
+   Active: active (running) since Sun 2021-06-20 10:40:05 UTC; 4s ago
+  Process: 1151 ExecStart=/usr/sbin/ntpd -u ntp:ntp $OPTIONS (code=exited, status=0/SUCCESS)
+ Main PID: 1152 (ntpd)
+   CGroup: /docker/dc4d87bd2c999a9987e26698b929f742c010e3ec3a5e69c4c92a08017662753a/system.slice/ntpd.service
+           └─1152 /usr/sbin/ntpd -u ntp:ntp -g 
+Hint: Some lines were ellipsized, use -l to show in full.
+[root@stapp01 ~]#
+ 
+7. Validate the task by NTP status 
+[root@stapp01 ~]# ntpstat
+synchronised to NTP server (66.85.78.80) at stratum 3
+   time correct to within 235 ms
+   polling server every 64 s
+[root@stapp01 ~]#      
  
 
