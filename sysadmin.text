@@ -1675,3 +1675,14 @@ thor@jump_host /$ ssh tony@stapp01
 [tony@stapp01 ~]$ whoami
 tony
 [tony@stapp01 ~]$
+.................................................
+Task 11
+Creating a User With an Expiry Date in Linux
+
+$ sudo useradd -e YYYY-MM-DD username
+sudo passwd username
+
+To verify the user account expiration details we can use chage command.To get the details, execute the following command in the terminal. 
+ 
+
+sudo chage -l Test
