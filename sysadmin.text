@@ -1686,3 +1686,54 @@ To verify the user account expiration details we can use chage command.To get th
  
 
 sudo chage -l Test
+.......................................
+Task 12
+ : New tools have been installed on the app server in Stratos Datacenter. Some of these tools can only be managed from the graphical user interface. Therefore, there are requirements for these app servers.
+
+On all App servers in Stratos Datacenter change the default runlevel so that they can boot in GUI (graphical user interface) by default.
+
+
+
+Please Note :-  Perform the below commands based on your question  server,  user name & other details might differ . So please read task carefully before executing. All the Best 👍
+
+
+Solution:  
+
+ 1. At first login on all app servers   & Switch to  root user
+[tony@stapp01 ~]$ sudo su -
+
+3. Run Below command to check the default run level              
+
+[root@stapp01 ~]# systemctl get-default
+multi-user.target
+[root@stapp01 ~]#
+
+4. Run Below command to change the run level to graphical.target
+        
+[root@stapp01 ~]# systemctl set-default graphical.target
+Removed symlink /etc/systemd/system/default.target.
+Created symlink from /etc/systemd/system/default.target to /usr/lib/systemd/system/graphical.target.
+[root@stapp01 ~]#
+
+5. Post set default start graphical service & validate  the status
+[root@stapp01 ~]# systemctl status graphical.traget
+● graphical.target - Graphical Interface
+   Loaded: loaded (/usr/lib/systemd/system/graphical.target; enabled; vendor preset: disabled)
+   Active: inactive (dead)
+     Docs: man:systemd.special(7)
+[root@stapp01 ~]#
+[root@stapp01 ~]# systemctl start graphical.target
+[root@stapp01 ~]# systemctl status graphical.target
+● graphical.target - Graphical Interface
+   Loaded: loaded (/usr/lib/systemd/system/graphical.target; enabled; vendor preset: disabled)
+   Active: active since Thu 2021-06-24 15:39:28 UTC; 1s ago
+     Docs: man:systemd.special(7)
+ Jun 24 15:39:28 stapp01.stratos.xfusioncorp.com systemd[1]: Job graphical.target/start finished,...e
+Jun 24 15:39:28 stapp01.stratos.xfusioncorp.com systemd[1]: Reached target Graphical Interface.
+Hint: Some lines were ellipsized, use -l to show in full.
+[root@stapp01 ~]#
+[root@stapp01 ~]# systemctl get-default
+
+[root@stapp01 ~]# systemctl get-default
+graphical.target
+[root@stapp01 ~]#
